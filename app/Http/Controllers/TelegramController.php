@@ -10,9 +10,12 @@ class TelegramController extends Controller
     public function handle(Request $request)
     {
         $input = $request->all();
-        $message = $input['message'];
-        $fid = $message['chat']['id'];
-        $text = $message['text'];
+
+        if (!empty($input['message'])) {
+            $message = $input['message'];
+            $fid = $message['chat']['id'];
+            $text = $message['text'];
+        }
 
         $bot = new TelegramService;
 
