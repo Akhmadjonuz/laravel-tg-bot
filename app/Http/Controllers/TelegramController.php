@@ -11,17 +11,12 @@ class TelegramController extends Controller
     {
         $input = $request->all();
 
-        if (!empty($input['message'])) {
-            $message = $input['message'];
-            $fid = $message['chat']['id'];
-            $text = $message['text'];
-        }
-
         $bot = new TelegramService;
+        $bot->setData($input);
 
-        if ($text == '/start') {
+        if ($bot->Text() == '/start') {
             $bot->sendMessage([
-                'chat_id' => $fid,
+                'chat_id' => $bot->ChatID(),
                 'text' => 'ishladi'
             ]);
         }

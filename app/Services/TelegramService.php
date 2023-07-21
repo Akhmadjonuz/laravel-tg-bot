@@ -35,16 +35,16 @@ class TelegramService
         $this->data = $this->getData();
     }
 
-    public function endpoint($api, array $content, $post = true)
+    public function endpoint($api, array $content, $post = true): array
     {
         $url = 'https://api.telegram.org/bot' . $this->bot_token . '/' . $api;
 
         if ($post)
-            $reply = $this->sendAPIRequest($url, $content);
+            $response = $this->sendAPIRequest($url, $content);
         else
-            $reply = $this->sendAPIRequest($url, [], false);
+            $response = $this->sendAPIRequest($url, [], false);
 
-        // return json_decode($reply, true);
+        return json_decode($response, true);
     }
 
     public function getMe()
@@ -225,7 +225,7 @@ class TelegramService
         return $this->endpoint('editMessageReplyMarkup', $content);
     }
 
-    public function downloadFile($telegram_file_path, $local_file_path)
+    public function downloadFile($telegram_file_path, $local_file_path): void
     {
         $file_url = 'https://api.telegram.org/file/bot' . $this->bot_token . '/' . $telegram_file_path;
         $in = fopen($file_url, 'rb');
@@ -260,61 +260,54 @@ class TelegramService
         $this->data = $data;
     }
 
-    public function Text()
+    public function Text(): string
     {
         $type = $this->getUpdateType();
         if ($type == self::CALLBACK_QUERY)
             return @$this->data['callback_query']['data'];
-
-        if ($type == self::CHANNEL_POST)
+        elseif ($type == self::CHANNEL_POST)
             return @$this->data['channel_post']['text'];
-
-        if ($type == self::EDITED_MESSAGE)
+        elseif ($type == self::EDITED_MESSAGE)
             return @$this->data['edited_message']['text'];
-
-        return @$this->data['message']['text'];
+        else
+            return @$this->data['message']['text'];
     }
 
-    public function Caption()
+    public function Caption(): string
     {
         $type = $this->getUpdateType();
         if ($type == self::CHANNEL_POST)
             return @$this->data['channel_post']['caption'];
-
-        return @$this->data['message']['caption'];
+        else
+            return @$this->data['message']['caption'];
     }
 
-    public function ChatID()
+    public function ChatID(): string
     {
         $type = $this->getUpdateType();
         if ($type == self::CALLBACK_QUERY)
             return @$this->data['callback_query']['message']['chat']['id'];
-
-        if ($type == self::CHANNEL_POST)
+        elseif ($type == self::CHANNEL_POST)
             return @$this->data['channel_post']['chat']['id'];
-
-        if ($type == self::EDITED_MESSAGE)
+        elseif ($type == self::EDITED_MESSAGE)
             return @$this->data['edited_message']['chat']['id'];
-
-        if ($type == self::INLINE_QUERY)
+        elseif ($type == self::INLINE_QUERY)
             return @$this->data['inline_query']['from']['id'];
-
-        return $this->data['message']['chat']['id'];
+        else
+            return $this->data['message']['chat']['id'];
     }
 
-    public function MessageID()
+    public function MessageID(): int
     {
         $type = $this->getUpdateType();
         if ($type == self::CALLBACK_QUERY)
             return @$this->data['callback_query']['message']['message_id'];
-
-        if ($type == self::CHANNEL_POST)
+        elseif ($type == self::CHANNEL_POST)
             return @$this->data['channel_post']['message_id'];
-
-        if ($type == self::EDITED_MESSAGE)
+        elseif ($type == self::EDITED_MESSAGE)
             return @$this->data['edited_message']['message_id'];
-
-        return $this->data['message']['message_id'];
+        else
+            return $this->data['message']['message_id'];
     }
 
     public function ReplyToMessageID()
@@ -362,52 +355,43 @@ class TelegramService
         return $this->data['message']['date'];
     }
 
-    public function FirstName()
+    public function FirstName(): string
     {
         $type = $this->getUpdateType();
         if ($type == self::CALLBACK_QUERY)
             return @$this->data['callback_query']['from']['first_name'];
-
-        if ($type == self::CHANNEL_POST)
+        elseif ($type == self::CHANNEL_POST)
             return @$this->data['channel_post']['from']['first_name'];
-
-        if ($type == self::EDITED_MESSAGE)
+        elseif ($type == self::EDITED_MESSAGE)
             return @$this->data['edited_message']['from']['first_name'];
-
-        return @$this->data['message']['from']['first_name'];
+        else
+            return @$this->data['message']['from']['first_name'];
     }
 
-    public function LastName()
+    public function LastName(): string
     {
         $type = $this->getUpdateType();
         if ($type == self::CALLBACK_QUERY)
             return @$this->data['callback_query']['from']['last_name'];
-
-        if ($type == self::CHANNEL_POST)
+        elseif ($type == self::CHANNEL_POST)
             return @$this->data['channel_post']['from']['last_name'];
-
-        if ($type == self::EDITED_MESSAGE)
+        elseif ($type == self::EDITED_MESSAGE)
             return @$this->data['edited_message']['from']['last_name'];
-
-        if ($type == self::MESSAGE)
+        else
             return @$this->data['message']['from']['last_name'];
-
-        return '';
     }
 
-    public function Username()
+    public function Username(): string
     {
         $type = $this->getUpdateType();
         if ($type == self::CALLBACK_QUERY)
             return @$this->data['callback_query']['from']['username'];
-
-        if ($type == self::CHANNEL_POST)
+        elseif ($type == self::CHANNEL_POST)
             return @$this->data['channel_post']['from']['username'];
-
-        if ($type == self::EDITED_MESSAGE)
+        elseif ($type == self::EDITED_MESSAGE)
             return @$this->data['edited_message']['from']['username'];
-
-        return @$this->data['message']['from']['username'];
+        else
+            return @$this->data['message']['from']['username'];
     }
 
     public function Location()
@@ -425,19 +409,17 @@ class TelegramService
         return count($this->updates['result']);
     }
 
-    public function UserID()
+    public function UserID(): string
     {
         $type = $this->getUpdateType();
         if ($type == self::CALLBACK_QUERY)
             return $this->data['callback_query']['from']['id'];
-
-        if ($type == self::CHANNEL_POST)
+        elseif ($type == self::CHANNEL_POST)
             return $this->data['channel_post']['from']['id'];
-
-        if ($type == self::EDITED_MESSAGE)
+        elseif ($type == self::EDITED_MESSAGE)
             return @$this->data['edited_message']['from']['id'];
-
-        return $this->data['message']['from']['id'];
+        else
+            return $this->data['message']['from']['id'];
     }
 
     public function FromID()
@@ -663,50 +645,36 @@ class TelegramService
         $update = $this->data;
         if (isset($update['inline_query']))
             return self::INLINE_QUERY;
-
-        if (isset($update['callback_query']))
+        elseif (isset($update['callback_query']))
             return self::CALLBACK_QUERY;
-
-        if (isset($update['edited_message']))
+        elseif (isset($update['edited_message']))
             return self::EDITED_MESSAGE;
-
-        if (isset($update['message']['text']))
+        elseif (isset($update['message']['text']))
             return self::MESSAGE;
-
-        if (isset($update['message']['photo']))
+        elseif (isset($update['message']['photo']))
             return self::PHOTO;
-
-        if (isset($update['message']['video']))
+        elseif (isset($update['message']['video']))
             return self::VIDEO;
-
-        if (isset($update['message']['audio']))
+        elseif (isset($update['message']['audio']))
             return self::AUDIO;
-
-        if (isset($update['message']['voice']))
+        elseif (isset($update['message']['voice']))
             return self::VOICE;
-
-        if (isset($update['message']['contact']))
+        elseif (isset($update['message']['contact']))
             return self::CONTACT;
-
-        if (isset($update['message']['location']))
+        elseif (isset($update['message']['location']))
             return self::LOCATION;
-
-        if (isset($update['message']['reply_to_message']))
+        elseif (isset($update['message']['reply_to_message']))
             return self::REPLY;
-
-        if (isset($update['message']['animation']))
+        elseif (isset($update['message']['animation']))
             return self::ANIMATION;
-
-        if (isset($update['message']['sticker']))
+        elseif (isset($update['message']['sticker']))
             return self::STICKER;
-
-        if (isset($update['message']['document']))
+        elseif (isset($update['message']['document']))
             return self::DOCUMENT;
-
-        if (isset($update['channel_post']))
+        elseif (isset($update['channel_post']))
             return self::CHANNEL_POST;
-
-        return false;
+        else
+            return false;
     }
 
     private function sendAPIRequest($url, array $content, $post = true)
