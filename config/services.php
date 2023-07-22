@@ -33,6 +33,7 @@ return [
 
     'telegram_bot' => [
         'api_key' => env('TELEGRAM_BOT_TOKEN'),
+        'admin_id' => env('ADMIN_ID')
     ]
 
 ];
