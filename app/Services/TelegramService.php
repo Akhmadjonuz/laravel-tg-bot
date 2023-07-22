@@ -35,7 +35,7 @@ class TelegramService
         $this->data = $this->getData();
     }
 
-    public function endpoint($api, array $content, $post = true): array
+    private function endpoint(string $api, array $content, $post = true): array
     {
         $url = 'https://api.telegram.org/bot' . $this->bot_token . '/' . $api;
 
@@ -237,13 +237,13 @@ class TelegramService
         fclose($out);
     }
 
-    public function setWebhook($url, $certificate = '')
+    public function setWebhook(string $url, string $certificate = '')
     {
-        if ($certificate == '') {
+        if ($certificate == '')
             $requestBody = ['url' => $url];
-        } else {
-            $requestBody = ['url' => $url, 'certificate' => "@$certificate"];
-        }
+        else
+            $requestBody = ['url' => $url, 'certificate' => @$certificate];
+
         return $this->endpoint('setWebhook', $requestBody, true);
     }
 
@@ -677,7 +677,7 @@ class TelegramService
             return false;
     }
 
-    private function sendAPIRequest($url, array $content, $post = true): array
+    private function sendAPIRequest(string $url, array $content, bool $post = true): array
     {
         try {
             if (isset($content['chat_id'])) {
