@@ -17,7 +17,7 @@ class TelegramController extends Controller
         if ($bot->Text() == '/start') {
             $bot->sendMessage([
                 'chat_id' => $bot->ChatID(),
-                'text' => 'ishladi'
+                'text' => 'ishladi ' .  $bot->FirstName()
             ]);
         }
     }

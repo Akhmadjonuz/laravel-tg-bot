@@ -44,7 +44,7 @@ class TelegramService
         else
             $response = $this->sendAPIRequest($url, [], false);
 
-        return json_decode($response, true);
+        return $response;
     }
 
     public function getMe()
@@ -677,7 +677,7 @@ class TelegramService
             return false;
     }
 
-    private function sendAPIRequest($url, array $content, $post = true)
+    private function sendAPIRequest($url, array $content, $post = true): array
     {
         try {
             if (isset($content['chat_id'])) {
@@ -690,7 +690,8 @@ class TelegramService
             if ($result->successful())
                 return $result->json();
             else
-                $this->log($result->status());
+                return [];
+            $this->log($result->status());
         } catch (\Exception $e) {
             return $this->log($e);
         }
