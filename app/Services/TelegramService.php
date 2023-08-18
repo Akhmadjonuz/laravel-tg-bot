@@ -283,7 +283,7 @@ class TelegramService
     {
         $type = $this->getUpdateType();
         if ($type == self::CALLBACK_QUERY)
-            return @$this->data['callback_query']['data'];
+            return @$this->data['callback_query']['message']['text'];
         elseif ($type == self::CHANNEL_POST)
             return @$this->data['channel_post']['text'];
         elseif ($type == self::EDITED_MESSAGE)
@@ -368,12 +368,18 @@ class TelegramService
 
     public function Callback_Data()
     {
-        return $this->data['callback_query']['data'];
+        if ($this->getUpdateType() == self::CALLBACK_QUERY)
+            return $this->data['callback_query']['data'];
+        else
+            return '';
     }
 
     public function Callback_Message()
     {
-        return $this->data['callback_query']['message'];
+        if ($this->getUpdateType() == self::CALLBACK_QUERY)
+            return $this->data['callback_query']['message'];
+        else
+            return '';
     }
 
     public function Callback_ChatID()
@@ -403,13 +409,13 @@ class TelegramService
     {
         $type = $this->getUpdateType();
         if ($type == self::CALLBACK_QUERY)
-            return @$this->data['callback_query']['from']['last_name'];
+            return @$this->data['callback_query']['from']['last_name'] ?? '';
         elseif ($type == self::CHANNEL_POST)
-            return @$this->data['channel_post']['from']['last_name'];
+            return @$this->data['channel_post']['from']['last_name'] ?? '';
         elseif ($type == self::EDITED_MESSAGE)
-            return @$this->data['edited_message']['from']['last_name'];
+            return @$this->data['edited_message']['from']['last_name'] ?? '';
         else
-            return @$this->data['message']['from']['last_name'];
+            return @$this->data['message']['from']['last_name'] ?? '';
     }
 
     public function Username(): string
@@ -508,7 +514,7 @@ class TelegramService
         $switch_inline_query_current_chat = null,
         $callback_game = '',
         $pay = ''
-    ) {
+    ): array {
         $replyMarkup = [
             'text' => $text,
         ];
@@ -710,20 +716,16 @@ class TelegramService
 
     private function sendAPIRequest(string $url, array $content, bool $post = true): array
     {
-        try {
-            if (isset($content['chat_id'])) {
-                $url = $url . '?chat_id=' . $content['chat_id'];
-                unset($content['chat_id']);
-            }
-
-            $result = Http::post($url, $content);
-
-            if ($result->successful())
-                return $result->json();
-            else
-                return [];
-        } catch (\Exception $e) {
-            return $this->log($e);
+        if (isset($content['chat_id'])) {
+            $url = $url . '?chat_id=' . $content['chat_id'];
+            unset($content['chat_id']);
         }
+
+        $result = Http::post($url, $content);
+
+        if ($result->successful())
+            return $result->json();
+        else
+            return [];
     }
 }
